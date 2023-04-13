@@ -1,6 +1,10 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 
+const managArr = [];
+const enginArr = [];
+const intArrn = [];
+
 const managerQuestions = [
   {
     type: "input",
@@ -107,3 +111,52 @@ const internQuestions = [
     choices: ["Add Engineer", "Add Intern", "Finish building team"],
   },
 ];
+
+function writeToFile(data) {
+  fs.writeFile("./dist/generatedHTML.md", generateHTML(data), (err) => {
+    if (err) {
+      console.log(err);
+      return;
+    } else {
+      console.log("it works!");
+    }
+  });
+}
+
+function init() {
+  inquirer
+    .prompt([
+      {
+        type: "checkbox",
+        name: "employeeChoice",
+        message:
+          "Welcome to TeamGen 2k9. Please select a team member role to create",
+        choices: [
+          "Manager",
+          "Engineer",
+          "Intern",
+          "I changed my mind, i have to go",
+        ],
+      },
+    ])
+    .then(function (data) {
+      if (data.choices === "Manager") {
+        inquirer.prompt(managerQuestions).then((manAnswers) => {
+          manAnswers.push(managArr);
+        });
+      } else if (data.choices === "Engineer") {
+        inquirer.prompt(engineerQuestions).then((engAnswers) => {
+          engAnswers.push(enginArr);
+        });
+      } else if (data.choices === "Intern") {
+        inquirer.prompt(internQuestions).then((intAnswers) => {
+          intAnswers.push(intArrn);
+        });
+      } else {
+        return;
+      }
+      // writeToFile(answers);
+    });
+}
+
+init();
