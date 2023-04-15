@@ -1,14 +1,20 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 
-const managArr = [];
-const enginArr = [];
-const intArrn = [];
+const Manager = require("./lib/Manager.js");
+const Engineer = require("./lib/Engineer.js");
+const Intern = require("./lib/Intern.js");
+
+// const managArr = [];
+// const enginArr = [];
+// const intArrn = [];
+
+const teamArr = [];
 
 const managerQuestions = [
   {
     type: "input",
-    name: "manager",
+    name: "managerName",
     message: "What is the Team Managers name?",
     validate: (managerInput) => {
       if (managerInput) {
@@ -22,7 +28,7 @@ const managerQuestions = [
 
   {
     type: "input",
-    name: "empId",
+    name: "manId",
     message: "What is their Employee ID number?",
   },
 
@@ -34,7 +40,7 @@ const managerQuestions = [
 
   {
     type: "input",
-    name: "office",
+    name: "manOffice",
     message: "What is their Office number?",
   },
 
@@ -112,16 +118,7 @@ const internQuestions = [
   },
 ];
 
-function writeToFile(data) {
-  fs.writeFile("./dist/generatedHTML.md", generateHTML(data), (err) => {
-    if (err) {
-      console.log(err);
-      return;
-    } else {
-      console.log("it works!");
-    }
-  });
-}
+
 
 function init() {
   inquirer
@@ -139,24 +136,53 @@ function init() {
         ],
       },
     ])
-    .then(function (data) {
-      if (data.choices === "Manager") {
-        inquirer.prompt(managerQuestions).then((manAnswers) => {
-          manAnswers.push(managArr);
-        });
+    .then(function (choice) {
+      if (choice.choices === "Manager") {
+        inquirer.prompt(managerQuestions)
+        .then(function(manAnswers) {
+          const manager = new Manager(
+         manAnswers.managerName,
+         manAnswers.manId,
+         manAnswers.manEmail,
+         manAnswers.manOffice);
+         teamArr.push(manager);
+    });
       } else if (data.choices === "Engineer") {
-        inquirer.prompt(engineerQuestions).then((engAnswers) => {
-          engAnswers.push(enginArr);
+        inquirer.prompt(engineerQuestions)
+        .then((engAnswers) => {
+          const engineer = new Engineer(
+            engAnswers.engName,
+            engAnswers.engId,
+            engAnswers.engEmail,
+            engAnswers.engGit);
+            teamArr.push(engineer);
         });
       } else if (data.choices === "Intern") {
-        inquirer.prompt(internQuestions).then((intAnswers) => {
-          intAnswers.push(intArrn);
+        inquirer.prompt(internQuestions)
+        .then((intAnswers) => {
+          const intern = new Intern(
+            intAnswers.intName,
+            intAnswers.intId,
+            intAnswers.intEmail,
+            intAnswers.intSchool);
+            teamArr.push(intern);
         });
       } else {
-        return;
-      }
-      // writeToFile(answers);
-    });
+       
+      writeToFile();
+    };
+})
+
+function writeToFile(data) {
+  fs.writeFile("./dist/generatedHTML.md", generateHTML(data), (err) => {
+    if (err) {
+      console.log(err);
+      return;
+    } else {
+      console.log("it works!");
+    }
+  });
+};
 }
 
 init();
