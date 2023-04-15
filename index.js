@@ -1,6 +1,8 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 
+const generateTeam = require("./src/generateHTML");
+
 const Manager = require("./lib/Manager.js");
 const Engineer = require("./lib/Engineer.js");
 const Intern = require("./lib/Intern.js");
@@ -14,7 +16,7 @@ const teamArr = [];
 const managerQuestions = [
   {
     type: "input",
-    name: "managerName",
+    name: "name",
     message: "What is the Team Managers name?",
     validate: (managerInput) => {
       if (managerInput) {
@@ -28,19 +30,19 @@ const managerQuestions = [
 
   {
     type: "input",
-    name: "manId",
+    name: "id",
     message: "What is their Employee ID number?",
   },
 
   {
     type: "input",
-    name: "manEmail",
+    name: "email",
     message: "What is their Email address?",
   },
 
   {
     type: "input",
-    name: "manOffice",
+    name: "office",
     message: "What is their Office number?",
   },
 
@@ -55,25 +57,25 @@ const managerQuestions = [
 const engineerQuestions = [
   {
     type: "input",
-    name: "engName",
+    name: "name",
     message: "What is the Engineer's name?",
   },
 
   {
     type: "input",
-    name: "engId",
+    name: "id",
     message: "What is their Employee ID number?",
   },
 
   {
     type: "input",
-    name: "engEmail",
+    name: "email",
     message: "What is their Email address?",
   },
 
   {
     type: "input",
-    name: "engHub",
+    name: "git",
     message: "What is their Github username?",
   },
 
@@ -88,25 +90,25 @@ const engineerQuestions = [
 const internQuestions = [
   {
     type: "input",
-    name: "intName",
+    name: "name",
     message: "What is the Intern's name?",
   },
 
   {
     type: "input",
-    name: "intId",
+    name: "id",
     message: "What is their Employee ID number?",
   },
 
   {
     type: "input",
-    name: "intEmail",
+    name: "email",
     message: "What is their Email address?",
   },
 
   {
     type: "input",
-    name: "intSchool",
+    name: "school",
     message: "What school do they go to?",
   },
 
@@ -117,8 +119,6 @@ const internQuestions = [
     choices: ["Add Engineer", "Add Intern", "Finish building team"],
   },
 ];
-
-
 
 function init() {
   inquirer
@@ -138,51 +138,50 @@ function init() {
     ])
     .then(function (choice) {
       if (choice.choices === "Manager") {
-        inquirer.prompt(managerQuestions)
-        .then(function(manAnswers) {
+        inquirer.prompt(managerQuestions).then(function (manAnswers) {
           const manager = new Manager(
-         manAnswers.managerName,
-         manAnswers.manId,
-         manAnswers.manEmail,
-         manAnswers.manOffice);
-         teamArr.push(manager);
-    });
+            manAnswers.name,
+            manAnswers.id,
+            manAnswers.email,
+            manAnswers.office
+          );
+          teamArr.push(manager);
+        });
       } else if (data.choices === "Engineer") {
-        inquirer.prompt(engineerQuestions)
-        .then((engAnswers) => {
+        inquirer.prompt(engineerQuestions).then((engAnswers) => {
           const engineer = new Engineer(
-            engAnswers.engName,
-            engAnswers.engId,
-            engAnswers.engEmail,
-            engAnswers.engGit);
-            teamArr.push(engineer);
+            engAnswers.name,
+            engAnswers.id,
+            engAnswers.email,
+            engAnswers.git
+          );
+          teamArr.push(engineer);
         });
       } else if (data.choices === "Intern") {
-        inquirer.prompt(internQuestions)
-        .then((intAnswers) => {
+        inquirer.prompt(internQuestions).then((intAnswers) => {
           const intern = new Intern(
-            intAnswers.intName,
-            intAnswers.intId,
-            intAnswers.intEmail,
-            intAnswers.intSchool);
-            teamArr.push(intern);
+            intAnswers.name,
+            intAnswers.id,
+            intAnswers.email,
+            intAnswers.school
+          );
+          teamArr.push(intern);
         });
       } else {
-       
-      writeToFile();
-    };
-})
+        writeToFile();
+      }
+    });
 
-function writeToFile(data) {
-  fs.writeFile("./dist/generatedHTML.md", generateHTML(data), (err) => {
-    if (err) {
-      console.log(err);
-      return;
-    } else {
-      console.log("it works!");
-    }
-  });
-};
+  function writeToFile(data) {
+    fs.writeFile("./dist/generatedHTML.md", generateHTML(data), (err) => {
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        console.log("it works!");
+      }
+    });
+  }
 }
 
 init();
